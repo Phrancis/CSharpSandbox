@@ -16,7 +16,6 @@ public static class MyExtensions
 
 //////// FRANCIS CUSTOM STUFF
 
-
 public static class IntUtils
 { 
     // Equivalent to Math.Pow(long) for int type.
@@ -33,6 +32,12 @@ public static class IntUtils
             }
         }
         return baseNum;
+    }
+    // Check if a number is palindrome, i.e., reads the same backward or forward.
+    public static bool IsPalindrome(int number)
+    {
+        string lexicalNumber = number.ToString();
+        return lexicalNumber.Equals(StringUtils.Reverse(lexicalNumber));    
     }
 }
 
@@ -103,5 +108,16 @@ public static class BigIntegerUtils
             i++;
         }
         return true;
+    }
+}
+
+public class StringUtils
+{
+    public static string Reverse(string s)
+    {
+        // Source: http://stackoverflow.com/a/228060/3626537
+        char[] chars = s.ToCharArray();
+        Array.Reverse(chars);
+        return new string(chars);
     }
 }
