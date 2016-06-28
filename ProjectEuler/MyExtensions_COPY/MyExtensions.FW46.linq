@@ -16,6 +16,26 @@ public static class MyExtensions
 
 //////// FRANCIS CUSTOM STUFF
 
+
+public static class IntUtils
+{ 
+    // Equivalent to Math.Pow(long) for int type.
+    public static int Pow(int baseNum, int exponent)
+    {
+        if (exponent == 0) { return 1; }
+        else if (exponent == 1) { return baseNum; }
+        else 
+        {
+            while (exponent > 1)
+            {
+                baseNum *= baseNum;
+                exponent--;
+            }
+        }
+        return baseNum;
+    }
+}
+
 public static class BigIntegerUtils
 {
     // Sqrt extension methods below sourced from Stack Overflow answer:
