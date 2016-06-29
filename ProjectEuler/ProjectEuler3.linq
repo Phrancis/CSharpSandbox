@@ -3,6 +3,8 @@
   <Namespace>System.Numerics</Namespace>
 </Query>
 
+
+
 // ProjectEuler3: Largest prime factor
 // https://projecteuler.net/problem=3
 void Main()
@@ -25,7 +27,7 @@ class ProjectEuler3
     public BigInteger GetAnswer()
     {
         // largest possible prime factor of a number is its square root [citation needed]
-        BigInteger maxPrimeFactor = BigNumbersUtils.Sqrt(number);
+        BigInteger maxPrimeFactor = BigIntegerUtils.Sqrt(number);
         // make sure number we start from is odd, as even numbers are never going to be prime
         if (maxPrimeFactor % 2 == 0) { maxPrimeFactor += 1; }
         // iterating by 2s to skip even numbers
@@ -80,34 +82,34 @@ class ProjectEuler3
     
 }
 
-public static class BigNumbersUtils 
-{
-    // Extension methods below sourced from Stack Overflow answer:
-    // http://stackoverflow.com/a/6084813/3626537
-    // Author: RedGreenCode http://stackoverflow.com/users/4803/redgreencode
-    public static BigInteger Sqrt(this BigInteger n)
-    {
-        if (n == 0) { return 0; }
-        
-        int bitLength = Convert.ToInt32(Math.Ceiling(BigInteger.Log(n, 2)));
-        BigInteger root = BigInteger.One << (bitLength / 2);
-
-        while (!isSqrt(n, root))
-        {
-            root += n / root;
-            root /= 2;
-        }
-
-        return root;
-
-        throw new ArithmeticException("NaN");
-    }
-
-    private static Boolean isSqrt(BigInteger n, BigInteger root)
-    {
-        BigInteger lowerBound = root*root;
-        BigInteger upperBound = (root + 1)*(root + 1);
-
-        return (n >= lowerBound && n < upperBound);
-    }
-}
+//public static class BigNumbersUtils 
+//{
+//    // Extension methods below sourced from Stack Overflow answer:
+//    // http://stackoverflow.com/a/6084813/3626537
+//    // Author: RedGreenCode http://stackoverflow.com/users/4803/redgreencode
+//    public static BigInteger Sqrt(this BigInteger n)
+//    {
+//        if (n == 0) { return 0; }
+//        
+//        int bitLength = Convert.ToInt32(Math.Ceiling(BigInteger.Log(n, 2)));
+//        BigInteger root = BigInteger.One << (bitLength / 2);
+//
+//        while (!isSqrt(n, root))
+//        {
+//            root += n / root;
+//            root /= 2;
+//        }
+//
+//        return root;
+//
+//        throw new ArithmeticException("NaN");
+//    }
+//
+//    private static Boolean isSqrt(BigInteger n, BigInteger root)
+//    {
+//        BigInteger lowerBound = root*root;
+//        BigInteger upperBound = (root + 1)*(root + 1);
+//
+//        return (n >= lowerBound && n < upperBound);
+//    }
+//}
