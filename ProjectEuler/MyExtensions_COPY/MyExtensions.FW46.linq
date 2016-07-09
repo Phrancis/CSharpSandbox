@@ -18,6 +18,77 @@ public static class MyExtensions
 
 public static class IntUtils
 { 
+    public static Boolean IsPrime(int n)
+    {
+        // short-circuit very common numbers
+        if (n <= 1)
+        {
+            return false;
+        }
+        else if (n <= 3) 
+        {
+            return true;
+        }   
+        else if (  n % 2 == 0 
+                || n % 3 == 0 
+                || (n != 5 && n % 5 == 0))
+        {
+            return false;
+        }
+        // iterate with trial division
+        BigInteger i = 5;
+        while (i * i <= n)
+        {
+            if (n % i == 0 || n % (i + 2) == 0)
+            {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+    
+    public static List<int> GetPrimesBetween(int min, int max)
+    {
+        var primes = new List<int>();
+        for(var i = min; i <= max; i++)
+        {
+            if(IntUtils.IsPrime(i) && i != 1)
+            {
+                primes.Add(i);
+            }
+        }
+        return primes;
+    }
+    
+    // Generate prime factors for a number, e.g., input 12 returns 2 2 3
+    public static IEnumerable<int> PrimeFactorize(int number)
+    {
+        if(IntUtils.IsPrime(number))
+        {
+            yield return number;
+        }
+        else
+        {
+            List<int> primes = IntUtils.GetPrimesBetween(2, number);            
+            // TODO this works but is a little slow, maybe it can be made faster with better algorithm
+            while(!IntUtils.IsPrime(number))
+            {
+                foreach(var p in primes)
+                {
+                    if(number % p == 0)
+                    {
+                        yield return p;
+                        number /= p;
+                        break;
+                    }
+                }
+            }
+            yield return number;
+        }
+    }
+    
+    
     // Equivalent to Math.Pow(long) for int type.
     public static int Pow(int baseNum, int exponent)
     {
@@ -36,8 +107,55 @@ public static class IntUtils
     // Check if a number is palindrome, i.e., reads the same backward or forward.
     public static bool IsPalindrome(int number)
     {
+        // improvements from: http://codereview.stackexchange.com/a/133372/42632
         string lexicalNumber = number.ToString();
-        return lexicalNumber.Equals(StringUtils.Reverse(lexicalNumber));    
+        int start = 0;
+        int end = lexicalNumber.Length - 1;
+        while (start < end)
+        {
+            if (lexicalNumber[start++] != lexicalNumber[end--])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static bool IsDivisibleBy(int num, int divisor)
+    {
+        if (num % divisor == 0)
+            { return true; }
+        else 
+            { return false; }
+    }
+    
+    // This method is designed to remove multiples from a list of numbers
+    // For example, an input of [2,3,6,8] should return [2,3]
+    public static List<int> RemoveMultiples(List<int> numbers)
+    {
+        // based on remove_multiples function at: http://codereview.stackexchange.com/q/133612/42632
+        numbers.Sort();
+        var length = numbers.Count;
+        var i = 0;
+        var j = 0;
+        while (i < length)
+        {
+            j = i + 1;
+            while (j < length)
+            {
+                if (numbers[j] % numbers[i] == 0)
+                {
+                    numbers.RemoveAt(j);
+                    length -= 1;
+                }
+                else
+                {
+                    j += 1;
+                }
+            }
+            i += 1;
+        }
+        return numbers;
     }
 }
 
