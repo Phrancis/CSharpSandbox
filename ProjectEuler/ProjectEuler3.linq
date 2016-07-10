@@ -1,9 +1,8 @@
 <Query Kind="Program">
   <Reference>&lt;RuntimeDirectory&gt;\System.Numerics.dll</Reference>
+  <Namespace>static MyExtensions</Namespace>
   <Namespace>System.Numerics</Namespace>
 </Query>
-
-
 
 // ProjectEuler3: Largest prime factor
 // https://projecteuler.net/problem=3
@@ -27,7 +26,7 @@ class ProjectEuler3
     public BigInteger GetAnswer()
     {
         // largest possible prime factor of a number is its square root [citation needed]
-        BigInteger maxPrimeFactor = BigIntegerUtils.Sqrt(number);
+        BigInteger maxPrimeFactor = Sqrt(number);
         // make sure number we start from is odd, as even numbers are never going to be prime
         if (maxPrimeFactor % 2 == 0) { maxPrimeFactor += 1; }
         // iterating by 2s to skip even numbers

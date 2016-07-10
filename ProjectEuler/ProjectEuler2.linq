@@ -1,4 +1,7 @@
-<Query Kind="Program" />
+<Query Kind="Program">
+  <Reference>&lt;MyDocuments&gt;\LINQPad Plugins\Framework 4.6\MyExtensions.FW46.dll</Reference>
+  <Namespace>static MyExtensions</Namespace>
+</Query>
 
 // ProjectEuler2: Even Fibonacci numbers
 // https://projecteuler.net/problem=2
@@ -47,9 +50,9 @@ class ProjectEuler2
         }
     }  
     
-    private Int32 SumEvenNumbers()
+    private int SumEvenNumbers()
     {
-        Int32 sum = 0;
+        var sum = 0;
         foreach (Int32 n in fibonacciSequence)
         {
             if (IsEvenNumber(n)) { sum += n; }
@@ -57,8 +60,8 @@ class ProjectEuler2
         return sum;
     }
     
-    private bool IsEvenNumber(Int32 n) 
-    {
-        return (n % 2 == 0) ? true : false;
-    }
+//    private bool IsEvenNumber(Int32 n) 
+//    {
+//        return (n % 2 == 0) ? true : false;
+//    }
 }

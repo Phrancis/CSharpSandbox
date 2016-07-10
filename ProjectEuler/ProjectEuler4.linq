@@ -1,4 +1,6 @@
-<Query Kind="Program" />
+<Query Kind="Program">
+  <Namespace>static MyExtensions</Namespace>
+</Query>
 
 // ProjectEuler4: Largest palindrome product
 // https://projecteuler.net/problem=4
@@ -49,7 +51,7 @@ public class ProjectEuler4
     {
         for(var value = (max * max); value >= (min * min); value--)
         {
-            if (IntUtils.IsPalindrome(value))
+            if (IsPalindrome(value))
             {
                 yield return value;
             }

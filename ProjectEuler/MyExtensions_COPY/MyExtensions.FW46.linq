@@ -1,5 +1,8 @@
 <Query Kind="Program">
+  <Reference>&lt;RuntimeDirectory&gt;\mscorlib.dll</Reference>
   <Reference>&lt;RuntimeDirectory&gt;\System.Numerics.dll</Reference>
+  <Namespace>System</Namespace>
+  <Namespace>System.Diagnostics</Namespace>
   <Namespace>System.Numerics</Namespace>
 </Query>
 
@@ -10,125 +13,41 @@ void Main()
 
 public static class MyExtensions
 {
-	// Write custom extension methods here. They will be available to all queries.
-	
-}
 
-//////// FRANCIS CUSTOM STUFF
+    /*****************************************************
+    COLLECTION / LIST UTILITIES
+    *****************************************************/
 
-public static class IntUtils
-{ 
-    public static Boolean IsPrime(int n)
+    /*
+    Given a List<T> source and List<T> exceptions, create a List<T> result which contains all of source, without exceptions, 
+    only omitting exact instances of a value, i.e., if a value appears twice in source, but once in exceptions, 
+    then result will have that value exactly one time.
+    For example:
+    Source: { 2, 2, 2, 6 }
+    Exceptions: { 2, 2, 3, 4, 5}
+    Result: { 2, 6 }
+    */
+    public static IEnumerable<T> ExceptExact<T>(this IEnumerable<T> source, IEnumerable<T> exceptions)
     {
-        // short-circuit very common numbers
-        if (n <= 1)
-        {
-            return false;
-        }
-        else if (n <= 3) 
-        {
-            return true;
-        }   
-        else if (  n % 2 == 0 
-                || n % 3 == 0 
-                || (n != 5 && n % 5 == 0))
-        {
-            return false;
-        }
-        // iterate with trial division
-        BigInteger i = 5;
-        while (i * i <= n)
-        {
-            if (n % i == 0 || n % (i + 2) == 0)
-            {
-                return false;
-            }
-            i++;
-        }
-        return true;
-    }
+        // Source: http://codereview.stackexchange.com/q/134413/42632
+        var tExceptions = new List<T>();
+        tExceptions.AddRange(exceptions);
     
-    public static List<int> GetPrimesBetween(int min, int max)
-    {
-        var primes = new List<int>();
-        for(var i = min; i <= max; i++)
+        var result = new List<T>();
+    
+        foreach (var el in source)
         {
-            if(IntUtils.IsPrime(i) && i != 1)
+            if (tExceptions.Contains(el))
             {
-                primes.Add(i);
+                tExceptions.RemoveAt(tExceptions.IndexOf(el));
+            }
+            else
+            {
+                result.Add(el);
             }
         }
-        return primes;
+        return result;
     }
-    
-    // Generate prime factors for a number, e.g., input 12 returns 2 2 3
-    public static IEnumerable<int> PrimeFactorize(int number)
-    {
-        if(IntUtils.IsPrime(number))
-        {
-            yield return number;
-        }
-        else
-        {
-            List<int> primes = IntUtils.GetPrimesBetween(2, number);            
-            // TODO this works but is a little slow, maybe it can be made faster with better algorithm
-            while(!IntUtils.IsPrime(number))
-            {
-                foreach(var p in primes)
-                {
-                    if(number % p == 0)
-                    {
-                        yield return p;
-                        number /= p;
-                        break;
-                    }
-                }
-            }
-            yield return number;
-        }
-    }
-    
-    
-    // Equivalent to Math.Pow(long) for int type.
-    public static int Pow(int baseNum, int exponent)
-    {
-        if (exponent == 0) { return 1; }
-        else if (exponent == 1) { return baseNum; }
-        else 
-        {
-            while (exponent > 1)
-            {
-                baseNum *= baseNum;
-                exponent--;
-            }
-        }
-        return baseNum;
-    }
-    // Check if a number is palindrome, i.e., reads the same backward or forward.
-    public static bool IsPalindrome(int number)
-    {
-        // improvements from: http://codereview.stackexchange.com/a/133372/42632
-        string lexicalNumber = number.ToString();
-        int start = 0;
-        int end = lexicalNumber.Length - 1;
-        while (start < end)
-        {
-            if (lexicalNumber[start++] != lexicalNumber[end--])
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    public static bool IsDivisibleBy(int num, int divisor)
-    {
-        if (num % divisor == 0)
-            { return true; }
-        else 
-            { return false; }
-    }
-    
     // This method is designed to remove multiples from a list of numbers
     // For example, an input of [2,3,6,8] should return [2,3]
     public static List<int> RemoveMultiples(List<int> numbers)
@@ -157,14 +76,156 @@ public static class IntUtils
         }
         return numbers;
     }
-}
-
-public static class BigIntegerUtils
-{
+    
+    
+    /*****************************************************
+    INT UTILITIES
+    *****************************************************/
+    
+    // Verify if a number is evenly divisible by another
+    public static bool IsEvenlyDivisibleBy(int num, int divisor)
+    {
+        if (num % divisor == 0)
+            { return true; }
+        else 
+            { return false; }
+    }
+    // Verify if a number is even
+    public static bool IsEvenNumber(int n) 
+    {
+        return (n % 2 == 0) ? true : false;
+    }
+    // Checks whether a number is prime
+    public static Boolean IsPrime(int n)
+    {
+        // short-circuit very common numbers
+        if (n <= 1)
+        {
+            return false;
+        }
+        else if (n <= 3) 
+        {
+            return true;
+        }   
+        else if (  n % 2 == 0 
+                || n % 3 == 0 
+                || (n != 5 && n % 5 == 0))
+        {
+            return false;
+        }
+        // iterate with trial division
+        BigInteger i = 7;
+        while (i * i <= n)
+        {
+            if (n % i == 0 || n % (i + 2) == 0)
+            {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+    // Get all primes between the min and max numbers provided
+    public static List<int> GetPrimesBetween(int min, int max)
+    {
+        var primes = new List<int>();
+        for(var i = min; i <= max; i++)
+        {
+            if(IsPrime(i) && i != 1)
+            {
+                primes.Add(i);
+            }
+        }
+        return primes;
+    }
+    // Generate prime factors for a number, e.g., input 12 returns 2 2 3
+    public static IEnumerable<int> PrimeFactorize(int number)
+    {
+        // Improved based on http://codereview.stackexchange.com/a/134397/42632
+        // Check divisibility by 2:
+        while (number % 2 == 0) 
+        {
+            yield return 2;
+            number /= 2;
+        }
+        // Check divisibility by 3, 5, 7, ...
+        for (var i = 3; i * i <= number; i += 2) 
+        {
+            while (number % i == 0) 
+            {
+                yield return i;
+                number /= i;
+            }
+        }
+        if (number > 1) 
+        {
+            yield return number;
+        }
+    }
+    // Equivalent to Math.Pow(long, long) for int type.
+    public static int Pow(int baseNum, int exponent)
+    {
+        if (exponent == 0) { return 1; }
+        else if (exponent == 1) { return baseNum; }
+        else 
+        {
+            while (exponent > 1)
+            {
+                baseNum *= baseNum;
+                exponent--;
+            }
+        }
+        return baseNum;
+    }
+    // Returns the Nth root of an int
+    public static int NthRoot(int number, int nthRoot)
+    {
+        double _number = (double)number;
+        double _nthRoot = (double)nthRoot;
+        double result = Math.Pow(_number, 1/_nthRoot);
+        return (int)Math.Floor(result);
+    }
+    // Mimics Math.Sqrt(long) but for int type
+    public static int Sqrt(int number)
+    {
+        return NthRoot(number, 2);
+    }
+    // Check if a number is palindrome, i.e., reads the same backward or forward.
+    public static bool IsPalindrome(int number)
+    {
+        // improvements from: http://codereview.stackexchange.com/a/133372/42632
+        string lexicalNumber = number.ToString();
+        int start = 0;
+        int end = lexicalNumber.Length - 1;
+        while (start < end)
+        {
+            if (lexicalNumber[start++] != lexicalNumber[end--])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /*****************************************************
+    STRING UTILITIES
+    *****************************************************/
+    
+    public static string Reverse(string s)
+    {
+        char[] chars = s.ToCharArray();
+        Array.Reverse(chars);
+        return new string(chars);
+    }
+    
+    /*****************************************************
+    BigInteger UTILITIES
+    *****************************************************/
+    
     // Sqrt extension methods below sourced from Stack Overflow answer:
     // http://stackoverflow.com/a/6084813/3626537
     // Author: RedGreenCode http://stackoverflow.com/users/4803/redgreencode
-    public static BigInteger Sqrt(this BigInteger n)
+    public static BigInteger Sqrt(BigInteger n)
     {
         if (n == 0) { return 0; }
         
@@ -226,16 +287,5 @@ public static class BigIntegerUtils
             i++;
         }
         return true;
-    }
-}
-
-public class StringUtils
-{
-    public static string Reverse(string s)
-    {
-        // Source: http://stackoverflow.com/a/228060/3626537
-        char[] chars = s.ToCharArray();
-        Array.Reverse(chars);
-        return new string(chars);
     }
 }

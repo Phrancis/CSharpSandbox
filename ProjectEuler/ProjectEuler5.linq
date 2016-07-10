@@ -1,5 +1,6 @@
 <Query Kind="Program">
   <Reference>&lt;MyDocuments&gt;\LINQPad Plugins\Framework 4.6\MyExtensions.FW46.dll</Reference>
+  <Namespace>static MyExtensions</Namespace>
 </Query>
 
 // ProjectEuler5: Smallest multiple
@@ -27,7 +28,7 @@ public class ProjectEuler5
         for(var i = minDivisor +1; i <= maxDivisor; i++)
         {
             // prime numbers can be added directly, as they are not divisible
-            if(IntUtils.IsPrime(i)) 
+            if(IsPrime(i)) 
             {
                 factors.Add(i);
             }
@@ -42,7 +43,7 @@ public class ProjectEuler5
                 var factorsTempCopy = new List<int>(factors);
                 
                 // get the prime factors of the current number
-                foreach(var F in IntUtils.PrimeFactorize(i))
+                foreach(var F in PrimeFactorize(i))
                 {
                     primeFactors.Add(F);
                 }
