@@ -12,32 +12,58 @@ What is the smallest positive number that is evenly divisible by all of the numb
 void Main()
 {
     Console.WriteLine("ProjectEuler5: Smallest multiple");
-    //ProjectEuler5.GetAnswer(1, 10);
-    //ProjectEuler5.GetAnswer(1, 20);
-    IntUtils.PrimeFactorize(100144).Dump();
+    ProjectEuler5.GetAnswer(1, 10); // OK 2520
+    ProjectEuler5.GetAnswer(1, 20); // Correct answer!
 }
 
 public class ProjectEuler5
 {
-    
-    public static void GetAnswer(int minDivisor, int maxDivisor)
+    public static int GetAnswer(int minDivisor, int maxDivisor)
     {
-        var answer = 0;
-               
-        List<int> factors = new List<int>();
-        for(int i = minDivisor; i <= maxDivisor; i++)
+        var factors = new List<int>();
+        var primeFactors = new List<int>();
+        var remainingFactors = new List<int>();
+
+        for(var i = minDivisor +1; i <= maxDivisor; i++)
         {
-            if(IntUtils.IsPrime(i))
+            // prime numbers can be added directly, as they are not divisible
+            if(IntUtils.IsPrime(i)) 
             {
                 factors.Add(i);
             }
+            // non-primes need to be broken down into prime factors, and processed to make sure 
+            // not to add factors that are already present from previous iterations
             else
             {
-                //
+                primeFactors.Clear();
+                remainingFactors.Clear();
+                
+                // copy to hold the factors needed for this operation
+                var factorsTempCopy = new List<int>(factors);
+                
+                // get the prime factors of the current number
+                foreach(var F in IntUtils.PrimeFactorize(i))
+                {
+                    primeFactors.Add(F);
+                }
+                // Compare a copy of the current main factors list and the primeFactors and trim out the excess,
+                // keeping only the primeFactors 
+                remainingFactors = (List<int>) primeFactors.ExceptExact(factorsTempCopy);
+                
+                // Add remaining factors into the current main factors list
+                foreach(var F in remainingFactors)
+                {
+                    factors.Add(F);
+                }
             }
         }
-        factors.Dump();
-        
-        Console.WriteLine("Min Divisor: {0} | Max Divisor: {1} | Answer: {1}", 1, 10, answer);
+        // finally, multiply all the factors to get the answer
+        var answer = 1;
+        foreach(var f in factors)
+        {
+            answer *= f;
+        }
+        Console.WriteLine("minDivisor: {0} | maxDivisor: {1} | smallest multiple: {2}", minDivisor, maxDivisor, answer);
+        return answer;
     }
 }
