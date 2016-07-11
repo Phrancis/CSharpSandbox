@@ -38,7 +38,8 @@ class ProjectEuler6
         }
         return sum;
     }
-    
+    // Get the square of the sum of all numbers between min and max
+    // e.g.: SquareOfTheSum(1,10) = (1 + 2 + ... + 10)^2 = 55^2 = 3025
     private static int SquareOfTheSum(int min, int max)
     {
         int sum = 0;
@@ -52,12 +53,11 @@ class ProjectEuler6
     public static int GetAnswer(int min, int max)
     {
         int sumOfTheSquares = SumOfTheSquares(min, max);
-        sumOfTheSquares.Dump();
         int squareOfTheSum = SquareOfTheSum(min, max);
-        squareOfTheSum.Dump();
         int answer = squareOfTheSum - sumOfTheSquares;
-        answer.Dump();
+        Console.WriteLine("min: {0} | max: {1} | SumOfTheSquares: {2} | SquareOfTheSum: {3} | Difference: {4}",
+            min, max, sumOfTheSquares, squareOfTheSum, answer
+        );
         return answer;
     }
-
 }
