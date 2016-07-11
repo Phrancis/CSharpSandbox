@@ -2,14 +2,18 @@
   <Namespace>static MyExtensions</Namespace>
 </Query>
 
-// ProjectEuler4: Largest palindrome product
-// https://projecteuler.net/problem=4
-// various improvements from answers to this post: http://codereview.stackexchange.com/q/133345/42632
+/*
+ProjectEuler4: Largest palindrome product
+https://projecteuler.net/problem=4
+various improvements from answers to this post: http://codereview.stackexchange.com/q/133345/42632
+
+A palindromic number reads the same both ways. The largest palindrome made from the product of two 2-digit numbers is 9009 = 91 × 99.
+Find the largest palindrome made from the product of two 3-digit numbers.
+*/
 void Main()
 {
     Console.WriteLine("ProjectEuler4: Largest palindrome product");
     // this is the test case from the original statement/problem
-    // it should return Palindrome: 9009 | firstFactor: 99 | secondFactor: 91
     var numDigits = 2;
     var PE4 = new ProjectEuler4(numDigits);
     PE4.GetAnswer();

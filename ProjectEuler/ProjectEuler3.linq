@@ -4,14 +4,19 @@
   <Namespace>System.Numerics</Namespace>
 </Query>
 
-// ProjectEuler3: Largest prime factor
-// https://projecteuler.net/problem=3
+/*
+ProjectEuler3: Largest prime factor
+https://projecteuler.net/problem=3
+
+The prime factors of 13195 are 5, 7, 13 and 29.
+What is the largest prime factor of the number 600851475143 ?
+*/
 void Main()
 {
     Console.WriteLine("ProjectEuler3: Largest prime factor");
     BigInteger testCase = 600851475143;
     ProjectEuler3 PE3 = new ProjectEuler3(testCase);
-    Console.WriteLine("Prime factor of {0} is: {1}", testCase, PE3.GetAnswer());
+    Console.WriteLine("Largest prime factor of {0} is: {1}", testCase, PE3.GetAnswer());
 }
 
 class ProjectEuler3

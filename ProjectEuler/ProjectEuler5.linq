@@ -3,9 +3,10 @@
   <Namespace>static MyExtensions</Namespace>
 </Query>
 
-// ProjectEuler5: Smallest multiple
-// https://projecteuler.net/problem=5
 /*
+ProjectEuler5: Smallest multiple
+https://projecteuler.net/problem=5
+
 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
 What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
 */
@@ -14,7 +15,7 @@ void Main()
 {
     Console.WriteLine("ProjectEuler5: Smallest multiple");
     ProjectEuler5.GetAnswer(1, 10); // OK 2520
-    ProjectEuler5.GetAnswer(1, 20); // Correct answer!
+    ProjectEuler5.GetAnswer(1, 20); // Correct answer
 }
 
 public class ProjectEuler5
