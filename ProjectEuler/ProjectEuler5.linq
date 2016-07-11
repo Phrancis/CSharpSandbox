@@ -50,7 +50,7 @@ public class ProjectEuler5
                 }
                 // Compare a copy of the current main factors list and the primeFactors and trim out the excess,
                 // keeping only the primeFactors 
-                remainingFactors = (List<int>) primeFactors.ExceptExact(factorsTempCopy);
+                remainingFactors = primeFactors.ExceptExact(factorsTempCopy).ToList();
                 
                 // Add remaining factors into the current main factors list
                 foreach(var F in remainingFactors)

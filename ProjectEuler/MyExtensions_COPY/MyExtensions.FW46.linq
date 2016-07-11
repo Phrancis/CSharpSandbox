@@ -29,24 +29,18 @@ public static class MyExtensions
     */
     public static IEnumerable<T> ExceptExact<T>(this IEnumerable<T> source, IEnumerable<T> exceptions)
     {
-        // Source: http://codereview.stackexchange.com/q/134413/42632
-        var tExceptions = new List<T>();
-        tExceptions.AddRange(exceptions);
-    
-        var result = new List<T>();
+        var tExceptions = exceptions.ToList();
     
         foreach (var el in source)
         {
-            if (tExceptions.Contains(el))
+            var index = tExceptions.IndexOf(el);
+            if (index >= 0)
             {
-                tExceptions.RemoveAt(tExceptions.IndexOf(el));
+                tExceptions.RemoveAt(index);
+                continue;
             }
-            else
-            {
-                result.Add(el);
-            }
+            yield return el;
         }
-        return result;
     }
     // This method is designed to remove multiples from a list of numbers
     // For example, an input of [2,3,6,8] should return [2,3]
