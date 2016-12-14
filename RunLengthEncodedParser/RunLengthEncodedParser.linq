@@ -32,7 +32,7 @@ public class RunLengthEncodedParser
         // based on http://stackoverflow.com/a/13437536/3626537
         var splitLines = RLE_File.Trim().Split( new string[] { System.Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();
         
-        /*debug*/Console.WriteLine(splitLines);
+        splitLines.Dump();
         
         PopulateAttributes(splitLines);
     }
@@ -68,14 +68,24 @@ public class RunLengthEncodedParser
                 this._ruleBirth = RulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
                 this._ruleSurvival = RulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
             }
+            else 
+            {
+                //all other lines are part of the raw pattern and should be concatenated together
+                //the pattern will be parsed separately in another method
+                this._patternRaw += line.Trim();
+            }
         }
-        /*debug*/Console.WriteLine("_name: " + this._name);
-        /*debug*/Console.WriteLine("_comments: ");
-        /*debug*/Console.WriteLine(this._comments);
-        /*debug*/Console.WriteLine("_author: " + this._author);
-        /*debug*/Console.WriteLine("_size_X: " + this._size_X);
-        /*debug*/Console.WriteLine("_size_Y: " + this._size_Y);
-        /*debug*/Console.WriteLine("_ruleBirth: " + this._ruleBirth);
-        /*debug*/Console.WriteLine("_ruleSurvival: " + this._ruleSurvival);
+        //DEBUG SECTION
+        Console.WriteLine("_name: " + this._name);
+        Console.WriteLine("_comments: ");
+        Console.WriteLine(this._comments);
+        Console.WriteLine("_author: " + this._author);
+        Console.WriteLine("_size_X: " + this._size_X);
+        Console.WriteLine("_size_Y: " + this._size_Y);
+        Console.WriteLine("_ruleBirth: ");
+        this._ruleBirth.Dump();
+        Console.WriteLine("_ruleSurvival: ");
+        this._ruleSurvival.Dump();
+        Console.WriteLine("_patternRaw: " + this._patternRaw);
     }
 }
