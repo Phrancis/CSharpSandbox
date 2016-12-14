@@ -19,8 +19,8 @@ public class RunLengthEncodedParser
     private string _author = "";
     private int _size_X = 0;
     private int _size_Y = 0;
-    private IEnumerable<int> _ruleBirth = new List<int>{ };
-    private IEnumerable<int> _ruleSurvival = new List<int>{ };
+    private List<int> _ruleBirth = new List<int>{ };
+    private List<int> _ruleSurvival = new List<int>{ };
     private string _patternRaw = "";
     
     /// <summary>
@@ -58,16 +58,24 @@ public class RunLengthEncodedParser
             }
             else if (line.Trim().StartsWith("x", StringComparison.OrdinalIgnoreCase))
             {
-                //Example: "x = 36, y = 9, rule = B3/S23"
+                //input example: "x = 36, y = 9, rule = B3/S23"
+                //resulting Params { "36", "9", "B3/S23"}
                 var Params = line.Split(',').Select(x => x.Replace(" ", "").Split('=')[1]).ToList();
-                //Result { "36", "9", "B3/S23"}
-                /*debug*/Console.WriteLine("Params: ");
-                /*debug*/Params.Dump();
+
+                this._size_X = Int32.Parse(Params[0]);
+                this._size_Y = Int32.Parse(Params[1]);
+                var RulesParams = Params[2].Split('/');
+                this._ruleBirth = RulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
+                this._ruleSurvival = RulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
             }
         }
-        ///*debug*/Console.WriteLine("_name: " + this._name);
-        ///*debug*/Console.WriteLine("_comments: ");
-        ///*debug*/Console.WriteLine(this._comments);
-        ///*debug*/Console.WriteLine("_author: " + this._author);
+        /*debug*/Console.WriteLine("_name: " + this._name);
+        /*debug*/Console.WriteLine("_comments: ");
+        /*debug*/Console.WriteLine(this._comments);
+        /*debug*/Console.WriteLine("_author: " + this._author);
+        /*debug*/Console.WriteLine("_size_X: " + this._size_X);
+        /*debug*/Console.WriteLine("_size_Y: " + this._size_Y);
+        /*debug*/Console.WriteLine("_ruleBirth: " + this._ruleBirth);
+        /*debug*/Console.WriteLine("_ruleSurvival: " + this._ruleSurvival);
     }
 }
