@@ -15,12 +15,12 @@ obo$10bo5bo7bo$11bo3bo$12b2o! ";
 public class RunLengthEncodedParser
 {
     private string _name = "";
-    private IEnumerable<string> _comments = new List<String>{ };
+    private List<string> _comments = new List<String>{ };
     private string _author = "";
     private int _size_X = 0;
     private int _size_Y = 0;
-    private List<int> _ruleBirth = new List<int>{ };
-    private List<int> _ruleSurvival = new List<int>{ };
+    private IEnumerable<int> _ruleBirth = new List<int>{ };
+    private IEnumerable<int> _ruleSurvival = new List<int>{ };
     private string _patternRaw = "";
     
     /// <summary>
@@ -31,8 +31,8 @@ public class RunLengthEncodedParser
     {
         // based on http://stackoverflow.com/a/13437536/3626537
         var splitLines = RLE_File.Trim().Split( new string[] { System.Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();
-        // debug
-        Console.WriteLine(splitLines);
+        
+        /*debug*/Console.WriteLine(splitLines);
         
         PopulateAttributes(splitLines);
     }
@@ -42,22 +42,32 @@ public class RunLengthEncodedParser
     /// </summary>
     private void PopulateAttributes(List<string> RLE_File_Lines)
     {
-        this._name = RLE_File_Lines.FirstOrDefault(line => 
-            line.Trim()
-                .StartsWith("#N", StringComparison.OrdinalIgnoreCase)
-        ).TrimStart("#N ".ToCharArray());
-        if (this._name == null) { this._name = ""; }
-        // debug
-        Console.WriteLine("_name: " + this._name);
-        
-        this._comments = RLE_File_Lines.Where(line => 
-            line.Trim()
-                .StartsWith("#C", StringComparison.OrdinalIgnoreCase)
-        ).Select(line => 
-            line.TrimStart("#Cc ".ToCharArray())
-        );
-        // debug
-        Console.WriteLine("_comments: ");
-        Console.WriteLine(this._comments);
+        foreach (string line in RLE_File_Lines)
+        {
+            if (line.Trim().StartsWith("#N", StringComparison.OrdinalIgnoreCase))
+            {
+                this._name = line.TrimStart("#Nn ".ToCharArray());
+            }
+            else if (line.Trim().StartsWith("#C", StringComparison.OrdinalIgnoreCase))
+            {
+                this._comments.Add(line.TrimStart("#Cc ".ToCharArray()));
+            }
+            else if (line.Trim().StartsWith("#O", StringComparison.OrdinalIgnoreCase))
+            {
+                this._author = line.TrimStart("#Oo ".ToCharArray());
+            }
+            else if (line.Trim().StartsWith("x", StringComparison.OrdinalIgnoreCase))
+            {
+                //Example: "x = 36, y = 9, rule = B3/S23"
+                var Params = line.Split(',').Select(x => x.Replace(" ", "").Split('=')[1]).ToList();
+                //Result { "36", "9", "B3/S23"}
+                /*debug*/Console.WriteLine("Params: ");
+                /*debug*/Params.Dump();
+            }
+        }
+        ///*debug*/Console.WriteLine("_name: " + this._name);
+        ///*debug*/Console.WriteLine("_comments: ");
+        ///*debug*/Console.WriteLine(this._comments);
+        ///*debug*/Console.WriteLine("_author: " + this._author);
     }
 }
