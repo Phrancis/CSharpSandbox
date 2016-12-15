@@ -1,5 +1,33 @@
 <Query Kind="Program" />
 
+/*** EXPECTED CONSOLE OUTPUT *****
+
+
+Name: Gosper glider gun
+Comments: 
+This was the first gun discovered.
+As its name suggests, it was discovered by Bill Gosper.
+Author: Bill Gosper Nov. 1970
+Size_X: 36
+Size_Y: 9
+RuleBirth: { 3 }
+RuleSurvival: { 2, 3 }
+PatternRaw: 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!
+HumanFriendlyPattern:
+........................o...........
+......................o.o...........
+............oo......oo............oo
+...........o...o....oo............oo
+oo........o.....o...oo..............
+oo........o...o.oo....o.o...........
+..........o.....o.......o...........
+...........o...o....................
+............oo......................
+
+
+**********************************/
+
+
 void Main()
 {
     string RLE_File = 
@@ -11,6 +39,19 @@ x = 36, y = 9, rule = B3/S23
 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
 obo$10bo5bo7bo$11bo3bo$12b2o! ";
     var rle = new RunLengthEncodedParser(RLE_File);
+    
+    // display all the available fields
+    Console.WriteLine("Name: " + rle.Name);
+    Console.WriteLine("Comments: ");
+    Console.WriteLine(string.Join(Environment.NewLine, rle.Comments));
+    Console.WriteLine("Author: " + rle.Author);
+    Console.WriteLine("Size_X: " + rle.Size_X);
+    Console.WriteLine("Size_Y: " + rle.Size_Y);
+    Console.WriteLine("RuleBirth: { " + string.Join(", ", rle.RuleBirth) + " }");
+    Console.WriteLine("RuleSurvival: { " + string.Join(", ", rle.RuleSurvival) + " }");
+    Console.WriteLine("PatternRaw: " + rle.PatternRaw);
+    Console.WriteLine("HumanFriendlyPattern:");
+    Console.WriteLine(rle.GetHumanFriendlyPattern());
 }
 
 public class RunLengthEncodedParser
@@ -86,16 +127,6 @@ public class RunLengthEncodedParser
                 this.PatternRaw += line.Trim();
             }
         }
-        //DEBUG SECTION
-        Console.WriteLine("Name: " + this.Name);
-        Console.WriteLine("Comments: ");
-        Console.WriteLine(string.Join(Environment.NewLine, this.Comments));
-        Console.WriteLine("Author: " + this.Author);
-        Console.WriteLine("Size_X: " + this.Size_X);
-        Console.WriteLine("Size_Y: " + this.Size_Y);
-        Console.WriteLine("RuleBirth: { " + string.Join(", ", this.RuleBirth) + " }");
-        Console.WriteLine("RuleSurvival: { " + string.Join(", ", this.RuleSurvival) + " }");
-        Console.WriteLine("PatternRaw: " + this.PatternRaw);
     }
     
     /// <summary>
@@ -161,8 +192,7 @@ public class RunLengthEncodedParser
                     this.Pattern[y, x] = DEAD_CELL;
                 }
             }
-        }
-        /*debug*/Console.WriteLine(GetHumanFriendlyPattern());    
+        }  
     }
     
     /// <summary>
