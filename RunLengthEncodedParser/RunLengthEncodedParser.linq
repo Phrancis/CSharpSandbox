@@ -54,6 +54,10 @@ obo$10bo5bo7bo$11bo3bo$12b2o! ";
     Console.WriteLine(rle.GetHumanReadablePattern());
 }
 
+/// <summary>
+/// Parser for Run Length Encode (RLE) strings / files. 
+/// More information: http://www.conwaylife.com/w/index.php?title=Run_Length_Encoded
+/// </summary>
 public class RunLengthEncodedParser
 {
     public string Name { get; private set; } = "";
@@ -73,8 +77,7 @@ public class RunLengthEncodedParser
     public readonly char LiveCellHumanDisplay = 'o';
     
     /// <summary>
-    /// Parser for Run Length Encode (RLE) strings / files. 
-    /// More information: http://www.conwaylife.com/w/index.php?title=Run_Length_Encoded
+    /// Creates an instance of RunLengthEncodedParser.
     /// </summary>
     /// <param name="rleFile">A string containing the raw RLE file to be parsed.</param>
     public RunLengthEncodedParser(string rleFile)
