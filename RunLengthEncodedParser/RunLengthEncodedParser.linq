@@ -156,7 +156,7 @@ public class RunLengthEncodedParser
                 }
             }
         }
-        Print2DArray(this._pattern);
+        PrintHumanFriendlyPattern();
         
     }
     
@@ -170,19 +170,50 @@ public class RunLengthEncodedParser
         return "0123456789".Contains(c);
     }
     
-    public static void Print2DArray<T>(T[,] matrix)
+    public void Print2DArray<T>(T[,] matrix)
     {
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                Console.Write(matrix[i,j] + "\t");
+                Console.Write(matrix[i,j] + "");
+                
             }
             Console.WriteLine();
         }
     }
 
+    public void PrintHumanFriendlyPattern()
+    {
+        var matrix = this._pattern;
+        for (int i = 0; i < matrix.GetLength(0); i++)
+        {
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                if (matrix[i,j] == 'b') 
+                { 
+                    Console.Write('.' + ""); 
+                }
+                else
+                {
+                    Console.Write(matrix[i,j] + "");
+                }
+                
+            }
+            Console.WriteLine();
+        }
+    }
 
-    
+ /*
+........................o...........
+......................o.o...........
+............oo......oo............oo
+...........o...o....oo............oo
+oo........o.....o...oo..............
+oo........o...o.oo....o.o...........
+..........o.....o.......o...........
+...........o...o....................
+............oo......................
+*/
     
 }
