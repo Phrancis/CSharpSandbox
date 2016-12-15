@@ -22,6 +22,8 @@ public class RunLengthEncodedParser
     private List<int> _ruleBirth = new List<int>{ };
     private List<int> _ruleSurvival = new List<int>{ };
     private string _patternRaw = "";
+    private char[ , ] _pattern;
+    
     
     /// <summary>
     /// Parser for Run Length Encode (RLE) strings / files. 
@@ -30,11 +32,12 @@ public class RunLengthEncodedParser
     public RunLengthEncodedParser(string RLE_File)
     {
         // based on http://stackoverflow.com/a/13437536/3626537
-        var splitLines = RLE_File.Trim().Split( new string[] { System.Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();
+        var splitLines = RLE_File.Trim().Split( new string[] { Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();
         
-        splitLines.Dump();
+        ///*debug*/Console.WriteLine(string.Join(Environment.NewLine, splitLines));
         
         PopulateAttributes(splitLines);
+        PopulatePattern();
     }
     
     /// <summary>
@@ -78,14 +81,77 @@ public class RunLengthEncodedParser
         //DEBUG SECTION
         Console.WriteLine("_name: " + this._name);
         Console.WriteLine("_comments: ");
-        Console.WriteLine(this._comments);
+        Console.WriteLine(string.Join(Environment.NewLine, this._comments));
         Console.WriteLine("_author: " + this._author);
         Console.WriteLine("_size_X: " + this._size_X);
         Console.WriteLine("_size_Y: " + this._size_Y);
-        Console.WriteLine("_ruleBirth: ");
-        this._ruleBirth.Dump();
-        Console.WriteLine("_ruleSurvival: ");
-        this._ruleSurvival.Dump();
+        Console.WriteLine("_ruleBirth: { " + string.Join(", ", this._ruleBirth) + " }");
+        Console.WriteLine("_ruleSurvival: { " + string.Join(", ", this._ruleSurvival) + " }");
         Console.WriteLine("_patternRaw: " + this._patternRaw);
     }
+    
+    private void PopulatePattern()
+    {
+        char defaultCell = 'b';
+        this._pattern = new char[this._size_X, this._size_Y];
+        var patternRows = this._patternRaw.Replace("!", "").Split('$').ToList();
+        /*debug*/patternRows.Dump();
+        
+        if (patternRows.Count() != this._size_Y) 
+        {
+            throw new ArgumentException($"Specified Y value is {this._size_Y} but the raw pattern rendered as {patternRows.Count()} rows.");
+        }
+        else
+        {
+            //write parse logic here
+            string numString;
+            int numCells;
+            for (int y = 0; y < this._size_Y; y++)
+            {
+                numString = string.Empty;
+                foreach (char c in patternRows[y])
+                {
+                    if (IsIntegerChar(c))
+                    {
+                        numString += c;
+                    }
+                    else
+                    {
+                        if (numString == string.Empty)
+                        {
+                            numCells = 1;
+                        }
+                        else
+                        {
+                            numCells = Int32.Parse(numString);
+                        }
+                        for (int x = 0; x < numCells; x++)
+                        {
+                            // INDEX OUT OF BOUNDS HERE
+                            this._pattern[y, x] = c;
+                        }
+                        numString = string.Empty;
+                    }
+                }
+                // fill in remaining empty spaces
+                for (int x = this._pattern.GetLength(y); x < this._size_Y; x++)
+                {
+                    this._pattern[y, x] = defaultCell;
+                }
+            }
+        }
+        /*debug*/Console.WriteLine("_pattern: " + string.Join(",", this._pattern));
+    }
+    
+    /// <summary>
+    /// Check if provided character is an integer.
+    /// </summary>
+    /// <param name="c">The character to check.</param>
+    /// <returns>Returns true if character is an integer.</returns>
+    private bool IsIntegerChar(char c)
+    {
+        return "0123456789".Contains(c);
+    }
+    
+    
 }
