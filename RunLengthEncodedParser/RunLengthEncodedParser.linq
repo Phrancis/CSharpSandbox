@@ -13,7 +13,7 @@ Size_Y: 9
 RuleBirth: { 3 }
 RuleSurvival: { 2, 3 }
 PatternRaw: 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!
-HumanFriendlyPattern:
+HumanReadablePattern:
 ........................o...........
 ......................o.o...........
 ............oo......oo............oo
@@ -50,8 +50,8 @@ obo$10bo5bo7bo$11bo3bo$12b2o! ";
     Console.WriteLine("RuleBirth: { " + string.Join(", ", rle.RuleBirth) + " }");
     Console.WriteLine("RuleSurvival: { " + string.Join(", ", rle.RuleSurvival) + " }");
     Console.WriteLine("PatternRaw: " + rle.PatternRaw);
-    Console.WriteLine("HumanFriendlyPattern:");
-    Console.WriteLine(rle.GetHumanFriendlyPattern());
+    Console.WriteLine("HumanReadablePattern:");
+    Console.WriteLine(rle.GetHumanReadablePattern());
 }
 
 public class RunLengthEncodedParser
@@ -205,10 +205,14 @@ public class RunLengthEncodedParser
         return "0123456789".Contains(c);
     }
 
-    public string GetHumanFriendlyPattern()
+    /// <summary>
+    /// Renders the pattern 2D matrix into a human-readable string.
+    /// </summary>
+    /// <returns>The human-readable string.</returns>
+    public string GetHumanReadablePattern()
     {
         var matrix = this.Pattern;
-        string humanFriendlyPattern = string.Empty;
+        string HumanReadablePattern = string.Empty;
         
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
@@ -216,20 +220,20 @@ public class RunLengthEncodedParser
             {
                 if (matrix[i,j] == DEAD_CELL) 
                 { 
-                    humanFriendlyPattern += DEAD_CELL_DISPLAY; 
+                    HumanReadablePattern += DEAD_CELL_DISPLAY; 
                 }
                 else if (matrix[i,j] == LIVE_CELL)
                 {
-                    humanFriendlyPattern += LIVE_CELL_DISPLAY;
+                    HumanReadablePattern += LIVE_CELL_DISPLAY;
                 }
                 else
                 {
-                    humanFriendlyPattern += '?';
+                    HumanReadablePattern += '?';
                 }
                 
             }
-            humanFriendlyPattern += Environment.NewLine;
+            HumanReadablePattern += Environment.NewLine;
         }
-        return humanFriendlyPattern;
+        return HumanReadablePattern;
     }    
 }
