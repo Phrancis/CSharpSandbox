@@ -92,8 +92,8 @@ public class RunLengthEncodedParser
     
     private void PopulatePattern()
     {
-        char defaultCell = 'b';
-        this._pattern = new char[this._size_X, this._size_Y];
+        char defaultCell = '.';
+        this._pattern = new char[this._size_Y, this._size_X];
         var patternRows = this._patternRaw.Replace("!", "").Split('$').ToList();
         /*debug*/patternRows.Dump();
         
@@ -103,44 +103,61 @@ public class RunLengthEncodedParser
         }
         else
         {
-            //write parse logic here
+            // parse logic
+            
             string numString;
             int numCells;
+            int currentCell;
+            
+            // go over each row
             for (int y = 0; y < this._size_Y; y++)
             {
+                // initialize counters
                 numString = string.Empty;
+                numCells = 0;
+                currentCell = 0;
+                
+                // go over characters in each row
                 foreach (char c in patternRows[y])
                 {
+                    // check if we encounter a number
                     if (IsIntegerChar(c))
                     {
                         numString += c;
                     }
+                    // if we encounter a non-number (cell), we need to start adding characters to the pattern
                     else
                     {
+                        // if cell was not preceded by a number, then we use 1
                         if (numString == string.Empty)
                         {
                             numCells = 1;
                         }
+                        // otherwise, we add as many as the numbers prior to it
                         else
                         {
                             numCells = Int32.Parse(numString);
+                            //Console.WriteLine(numString);
                         }
-                        for (int x = 0; x < numCells; x++)
+                        // here we actually add the number of cells
+                        int endCell = currentCell + numCells;
+                        for (int x = currentCell; x < endCell; x++, currentCell++)
                         {
-                            // INDEX OUT OF BOUNDS HERE
                             this._pattern[y, x] = c;
                         }
+                        // finally, we reset the number
                         numString = string.Empty;
                     }
                 }
                 // fill in remaining empty spaces
-                for (int x = this._pattern.GetLength(y); x < this._size_Y; x++)
+                for (int x = currentCell; x < this._size_X; x++)
                 {
                     this._pattern[y, x] = defaultCell;
                 }
             }
         }
-        /*debug*/Console.WriteLine("_pattern: " + string.Join(",", this._pattern));
+        Print2DArray(this._pattern);
+        
     }
     
     /// <summary>
@@ -152,6 +169,20 @@ public class RunLengthEncodedParser
     {
         return "0123456789".Contains(c);
     }
+    
+    public static void Print2DArray<T>(T[,] matrix)
+    {
+        for (int i = 0; i < matrix.GetLength(0); i++)
+        {
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                Console.Write(matrix[i,j] + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+
+
     
     
 }
