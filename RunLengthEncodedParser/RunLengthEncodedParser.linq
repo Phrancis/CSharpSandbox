@@ -8,12 +8,12 @@ Comments:
 This was the first gun discovered.
 As its name suggests, it was discovered by Bill Gosper.
 Author: Bill Gosper Nov. 1970
-Size_X: 36
-Size_Y: 9
+SizeX: 36
+SizeY: 9
 RuleBirth: { 3 }
 RuleSurvival: { 2, 3 }
 PatternRaw: 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!
-HumanReadablePattern:
+humanReadablePattern:
 ........................o...........
 ......................o.o...........
 ............oo......oo............oo
@@ -30,7 +30,7 @@ oo........o...o.oo....o.o...........
 
 void Main()
 {
-    string RLE_File = 
+    string rleFile = 
 @"#N Gosper glider gun
 #C This was the first gun discovered.
 #C As its name suggests, it was discovered by Bill Gosper.
@@ -38,19 +38,19 @@ void Main()
 x = 36, y = 9, rule = B3/S23
 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
 obo$10bo5bo7bo$11bo3bo$12b2o! ";
-    var rle = new RunLengthEncodedParser(RLE_File);
+    var rle = new RunLengthEncodedParser(rleFile);
     
     // display all the available fields
     Console.WriteLine("Name: " + rle.Name);
     Console.WriteLine("Comments: ");
     Console.WriteLine(string.Join(Environment.NewLine, rle.Comments));
     Console.WriteLine("Author: " + rle.Author);
-    Console.WriteLine("Size_X: " + rle.Size_X);
-    Console.WriteLine("Size_Y: " + rle.Size_Y);
+    Console.WriteLine("SizeX: " + rle.SizeX);
+    Console.WriteLine("SizeY: " + rle.SizeY);
     Console.WriteLine("RuleBirth: { " + string.Join(", ", rle.RuleBirth) + " }");
     Console.WriteLine("RuleSurvival: { " + string.Join(", ", rle.RuleSurvival) + " }");
     Console.WriteLine("PatternRaw: " + rle.PatternRaw);
-    Console.WriteLine("HumanReadablePattern:");
+    Console.WriteLine("humanReadablePattern:");
     Console.WriteLine(rle.GetHumanReadablePattern());
 }
 
@@ -59,27 +59,27 @@ public class RunLengthEncodedParser
     public string Name { get; private set; } = "";
     public List<string> Comments {get; private set; } = new List<String>{ };
     public string Author { get; private set; } = "";
-    public int Size_X { get; private set; } = 0;
-    public int Size_Y { get; private set; } = 0;
+    public int SizeX { get; private set; } = 0;
+    public int SizeY { get; private set; } = 0;
     public List<int> RuleBirth { get; private set; } = new List<int>{ };
     public List<int> RuleSurvival { get; private set; } = new List<int>{ };
     public string PatternRaw { get; private set; } = "";
     public char[ , ] Pattern { get; private set; }
     
-    // constants
-    public readonly char DEAD_CELL = 'b';
-    public readonly char LIVE_CELL = 'o';
-    public readonly char DEAD_CELL_DISPLAY = '.';
-    public readonly char LIVE_CELL_DISPLAY = 'o';
+    // cell type constants
+    public readonly char DeadCell = 'b';
+    public readonly char DeadCellHumanDisplay = '.';
+    public readonly char LiveCell = 'o';
+    public readonly char LiveCellHumanDisplay = 'o';
     
     /// <summary>
     /// Parser for Run Length Encode (RLE) strings / files. 
     /// More information: http://www.conwaylife.com/w/index.php?title=Run_Length_Encoded
     /// </summary>
-    /// <param name="RLE_File">A string containing the raw RLE file to be parsed.</param>
-    public RunLengthEncodedParser(string RLE_File)
+    /// <param name="rleFile">A string containing the raw RLE file to be parsed.</param>
+    public RunLengthEncodedParser(string rleFile)
     {
-        var splitLines = RLE_File.Trim().Split( new string[] { Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();        
+        var splitLines = rleFile.Trim().Split( new string[] { Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();        
         PopulateAttributes(splitLines);
         PopulatePattern();
     }
@@ -87,10 +87,10 @@ public class RunLengthEncodedParser
     /// <summary>
     /// Parse RLE file lines, using its syntax to assign its various values to class attributes.
     /// </summary>
-    /// <param name"RLE_File_Lines">A list of all lines from the file.</param>
-    private void PopulateAttributes(List<string> RLE_File_Lines)
+    /// <param name"rleFileLines">A list of all lines from the file.</param>
+    private void PopulateAttributes(List<string> rleFileLines)
     {
-        foreach (string line in RLE_File_Lines)
+        foreach (string line in rleFileLines)
         {
             // name line
             if (line.Trim().StartsWith("#N", StringComparison.OrdinalIgnoreCase))
@@ -111,14 +111,14 @@ public class RunLengthEncodedParser
             else if (line.Trim().StartsWith("x", StringComparison.OrdinalIgnoreCase))
             {
                 //input example: "x = 36, y = 9, rule = B3/S23"
-                //resulting Params { "36", "9", "B3/S23"}
-                var Params = line.Split(',').Select(x => x.Replace(" ", "").Split('=')[1]).ToList();
+                //resulting paramList { "36", "9", "B3/S23"}
+                var paramList = line.Split(',').Select(x => x.Replace(" ", "").Split('=')[1]).ToList();
 
-                this.Size_X = Int32.Parse(Params[0]);
-                this.Size_Y = Int32.Parse(Params[1]);
-                var RulesParams = Params[2].Split('/');
-                this.RuleBirth = RulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
-                this.RuleSurvival = RulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
+                this.SizeX = Int32.Parse(paramList[0]);
+                this.SizeY = Int32.Parse(paramList[1]);
+                var rulesParams = paramList[2].Split('/');
+                this.RuleBirth = rulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
+                this.RuleSurvival = rulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
             }
             else 
             {
@@ -134,26 +134,28 @@ public class RunLengthEncodedParser
     /// </summary>
     private void PopulatePattern()
     {
-        this.Pattern = new char[this.Size_Y, this.Size_X];
+        this.Pattern = new char[this.SizeY, this.SizeX];
         var patternRows = this.PatternRaw.Replace("!", "").Split('$').ToList();
 
-        if (patternRows.Count() != this.Size_Y) 
+        if (patternRows.Count() != this.SizeY) 
         {
-            throw new ArgumentException($"Specified Y value is {this.Size_Y} but the raw pattern rendered as {patternRows.Count()} rows.");
+            throw new ArgumentException($"Specified Y value is {this.SizeY} but the raw pattern rendered as {patternRows.Count()} rows.");
         }
         else
         {
             string numString;
             int numCells;
             int currentCell;
+            int endCell;
             
             // go over each row
-            for (int y = 0; y < this.Size_Y; y++)
+            for (int y = 0; y < this.SizeY; y++)
             {
                 // initialize counters
                 numString = string.Empty;
                 numCells = 0;
                 currentCell = 0;
+                endCell = 0;
                 
                 // go over characters in each row
                 foreach (char c in patternRows[y])
@@ -177,7 +179,7 @@ public class RunLengthEncodedParser
                             numCells = Int32.Parse(numString);
                         }
                         // here we actually add the number of cells
-                        int endCell = currentCell + numCells;
+                        endCell = currentCell + numCells;
                         for (int x = currentCell; x < endCell; x++, currentCell++)
                         {
                             this.Pattern[y, x] = c;
@@ -187,9 +189,9 @@ public class RunLengthEncodedParser
                     }
                 }
                 // fill in remaining empty spaces in row
-                for (int x = currentCell; x < this.Size_X; x++)
+                for (int x = currentCell; x < this.SizeX; x++)
                 {
-                    this.Pattern[y, x] = DEAD_CELL;
+                    this.Pattern[y, x] = DeadCell;
                 }
             }
         }  
@@ -212,28 +214,27 @@ public class RunLengthEncodedParser
     public string GetHumanReadablePattern()
     {
         var matrix = this.Pattern;
-        string HumanReadablePattern = string.Empty;
+        string humanReadablePattern = string.Empty;
         
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                if (matrix[i,j] == DEAD_CELL) 
+                if (matrix[i,j] == DeadCell) 
                 { 
-                    HumanReadablePattern += DEAD_CELL_DISPLAY; 
+                    humanReadablePattern += DeadCellHumanDisplay; 
                 }
-                else if (matrix[i,j] == LIVE_CELL)
+                else if (matrix[i,j] == LiveCell)
                 {
-                    HumanReadablePattern += LIVE_CELL_DISPLAY;
+                    humanReadablePattern += LiveCellHumanDisplay;
                 }
                 else
                 {
-                    HumanReadablePattern += '?';
+                    humanReadablePattern += '?';
                 }
-                
             }
-            HumanReadablePattern += Environment.NewLine;
+            humanReadablePattern += Environment.NewLine;
         }
-        return HumanReadablePattern;
+        return humanReadablePattern;
     }    
 }
