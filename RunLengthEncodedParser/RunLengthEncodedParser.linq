@@ -2,9 +2,10 @@
 
 void Main()
 {
-    string RLE_File = @"#N Gosper glider gun
+    string RLE_File = 
+@"#N Gosper glider gun
 #C This was the first gun discovered.
-#c As its name suggests, it was discovered by Bill Gosper.
+#C As its name suggests, it was discovered by Bill Gosper.
 #O Bill Gosper Nov. 1970
 x = 36, y = 9, rule = B3/S23
 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
@@ -24,18 +25,20 @@ public class RunLengthEncodedParser
     private string _patternRaw = "";
     private char[ , ] _pattern;
     
+    // constants
+    public readonly char DEAD_CELL = 'b';
+    public readonly char LIVE_CELL = 'o';
+    public readonly char DEAD_CELL_DISPLAY = '.';
+    public readonly char LIVE_CELL_DISPLAY = 'o';
     
     /// <summary>
     /// Parser for Run Length Encode (RLE) strings / files. 
     /// More information: http://www.conwaylife.com/w/index.php?title=Run_Length_Encoded
     /// </summary>
+    /// <param name="RLE_File">A string containing the raw RLE file to be parsed.</param>
     public RunLengthEncodedParser(string RLE_File)
     {
-        // based on http://stackoverflow.com/a/13437536/3626537
-        var splitLines = RLE_File.Trim().Split( new string[] { Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();
-        
-        ///*debug*/Console.WriteLine(string.Join(Environment.NewLine, splitLines));
-        
+        var splitLines = RLE_File.Trim().Split( new string[] { Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries ).ToList();        
         PopulateAttributes(splitLines);
         PopulatePattern();
     }
@@ -43,22 +46,27 @@ public class RunLengthEncodedParser
     /// <summary>
     /// Parse RLE file lines, using its syntax to assign its various values to class attributes.
     /// </summary>
+    /// <param name"RLE_File_Lines">A list of all lines from the file.</param>
     private void PopulateAttributes(List<string> RLE_File_Lines)
     {
         foreach (string line in RLE_File_Lines)
         {
+            // name line
             if (line.Trim().StartsWith("#N", StringComparison.OrdinalIgnoreCase))
             {
                 this._name = line.TrimStart("#Nn ".ToCharArray());
             }
+            // comment line
             else if (line.Trim().StartsWith("#C", StringComparison.OrdinalIgnoreCase))
             {
                 this._comments.Add(line.TrimStart("#Cc ".ToCharArray()));
             }
+            // author line
             else if (line.Trim().StartsWith("#O", StringComparison.OrdinalIgnoreCase))
             {
                 this._author = line.TrimStart("#Oo ".ToCharArray());
             }
+            // pattern size and cellular automaton rules
             else if (line.Trim().StartsWith("x", StringComparison.OrdinalIgnoreCase))
             {
                 //input example: "x = 36, y = 9, rule = B3/S23"
@@ -90,21 +98,20 @@ public class RunLengthEncodedParser
         Console.WriteLine("_patternRaw: " + this._patternRaw);
     }
     
+    /// <summary>
+    /// Parses and assigns the raw pattern from this instance into a matrix of characters (i.e. the pattern).
+    /// </summary>
     private void PopulatePattern()
     {
-        char defaultCell = '.';
         this._pattern = new char[this._size_Y, this._size_X];
         var patternRows = this._patternRaw.Replace("!", "").Split('$').ToList();
-        /*debug*/patternRows.Dump();
-        
+
         if (patternRows.Count() != this._size_Y) 
         {
             throw new ArgumentException($"Specified Y value is {this._size_Y} but the raw pattern rendered as {patternRows.Count()} rows.");
         }
         else
         {
-            // parse logic
-            
             string numString;
             int numCells;
             int currentCell;
@@ -137,7 +144,6 @@ public class RunLengthEncodedParser
                         else
                         {
                             numCells = Int32.Parse(numString);
-                            //Console.WriteLine(numString);
                         }
                         // here we actually add the number of cells
                         int endCell = currentCell + numCells;
@@ -145,19 +151,18 @@ public class RunLengthEncodedParser
                         {
                             this._pattern[y, x] = c;
                         }
-                        // finally, we reset the number
+                        // finally, we reset the number string so we are ready to read another number
                         numString = string.Empty;
                     }
                 }
-                // fill in remaining empty spaces
+                // fill in remaining empty spaces in row
                 for (int x = currentCell; x < this._size_X; x++)
                 {
-                    this._pattern[y, x] = defaultCell;
+                    this._pattern[y, x] = DEAD_CELL;
                 }
             }
         }
-        PrintHumanFriendlyPattern();
-        
+        /*debug*/Console.WriteLine(GetHumanFriendlyPattern());    
     }
     
     /// <summary>
@@ -169,51 +174,32 @@ public class RunLengthEncodedParser
     {
         return "0123456789".Contains(c);
     }
-    
-    public void Print2DArray<T>(T[,] matrix)
-    {
-        for (int i = 0; i < matrix.GetLength(0); i++)
-        {
-            for (int j = 0; j < matrix.GetLength(1); j++)
-            {
-                Console.Write(matrix[i,j] + "");
-                
-            }
-            Console.WriteLine();
-        }
-    }
 
-    public void PrintHumanFriendlyPattern()
+    public string GetHumanFriendlyPattern()
     {
         var matrix = this._pattern;
+        string humanFriendlyPattern = string.Empty;
+        
         for (int i = 0; i < matrix.GetLength(0); i++)
         {
             for (int j = 0; j < matrix.GetLength(1); j++)
             {
-                if (matrix[i,j] == 'b') 
+                if (matrix[i,j] == DEAD_CELL) 
                 { 
-                    Console.Write('.' + ""); 
+                    humanFriendlyPattern += DEAD_CELL_DISPLAY; 
+                }
+                else if (matrix[i,j] == LIVE_CELL)
+                {
+                    humanFriendlyPattern += LIVE_CELL_DISPLAY;
                 }
                 else
                 {
-                    Console.Write(matrix[i,j] + "");
+                    humanFriendlyPattern += '?';
                 }
                 
             }
-            Console.WriteLine();
+            humanFriendlyPattern += Environment.NewLine;
         }
-    }
-
- /*
-........................o...........
-......................o.o...........
-............oo......oo............oo
-...........o...o....oo............oo
-oo........o.....o...oo..............
-oo........o...o.oo....o.o...........
-..........o.....o.......o...........
-...........o...o....................
-............oo......................
-*/
-    
+        return humanFriendlyPattern;
+    }    
 }
