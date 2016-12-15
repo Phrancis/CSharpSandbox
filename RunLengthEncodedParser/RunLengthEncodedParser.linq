@@ -10,20 +10,20 @@ void Main()
 x = 36, y = 9, rule = B3/S23
 24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4b
 obo$10bo5bo7bo$11bo3bo$12b2o! ";
-    var parser = new RunLengthEncodedParser(RLE_File);
+    var rle = new RunLengthEncodedParser(RLE_File);
 }
 
 public class RunLengthEncodedParser
 {
-    private string _name = "";
-    private List<string> _comments = new List<String>{ };
-    private string _author = "";
-    private int _size_X = 0;
-    private int _size_Y = 0;
-    private List<int> _ruleBirth = new List<int>{ };
-    private List<int> _ruleSurvival = new List<int>{ };
-    private string _patternRaw = "";
-    private char[ , ] _pattern;
+    public string Name { get; private set; } = "";
+    public List<string> Comments {get; private set; } = new List<String>{ };
+    public string Author { get; private set; } = "";
+    public int Size_X { get; private set; } = 0;
+    public int Size_Y { get; private set; } = 0;
+    public List<int> RuleBirth { get; private set; } = new List<int>{ };
+    public List<int> RuleSurvival { get; private set; } = new List<int>{ };
+    public string PatternRaw { get; private set; } = "";
+    public char[ , ] Pattern { get; private set; }
     
     // constants
     public readonly char DEAD_CELL = 'b';
@@ -54,17 +54,17 @@ public class RunLengthEncodedParser
             // name line
             if (line.Trim().StartsWith("#N", StringComparison.OrdinalIgnoreCase))
             {
-                this._name = line.TrimStart("#Nn ".ToCharArray());
+                this.Name = line.TrimStart("#Nn ".ToCharArray());
             }
             // comment line
             else if (line.Trim().StartsWith("#C", StringComparison.OrdinalIgnoreCase))
             {
-                this._comments.Add(line.TrimStart("#Cc ".ToCharArray()));
+                this.Comments.Add(line.TrimStart("#Cc ".ToCharArray()));
             }
             // author line
             else if (line.Trim().StartsWith("#O", StringComparison.OrdinalIgnoreCase))
             {
-                this._author = line.TrimStart("#Oo ".ToCharArray());
+                this.Author = line.TrimStart("#Oo ".ToCharArray());
             }
             // pattern size and cellular automaton rules
             else if (line.Trim().StartsWith("x", StringComparison.OrdinalIgnoreCase))
@@ -73,29 +73,29 @@ public class RunLengthEncodedParser
                 //resulting Params { "36", "9", "B3/S23"}
                 var Params = line.Split(',').Select(x => x.Replace(" ", "").Split('=')[1]).ToList();
 
-                this._size_X = Int32.Parse(Params[0]);
-                this._size_Y = Int32.Parse(Params[1]);
+                this.Size_X = Int32.Parse(Params[0]);
+                this.Size_Y = Int32.Parse(Params[1]);
                 var RulesParams = Params[2].Split('/');
-                this._ruleBirth = RulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
-                this._ruleSurvival = RulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
+                this.RuleBirth = RulesParams[0].Replace("B", "").Select(x => Int32.Parse(x.ToString())).ToList();
+                this.RuleSurvival = RulesParams[1].Replace("S", "").Select(x => Int32.Parse(x.ToString())).ToList();
             }
             else 
             {
                 //all other lines are part of the raw pattern and should be concatenated together
                 //the pattern will be parsed separately in another method
-                this._patternRaw += line.Trim();
+                this.PatternRaw += line.Trim();
             }
         }
         //DEBUG SECTION
-        Console.WriteLine("_name: " + this._name);
-        Console.WriteLine("_comments: ");
-        Console.WriteLine(string.Join(Environment.NewLine, this._comments));
-        Console.WriteLine("_author: " + this._author);
-        Console.WriteLine("_size_X: " + this._size_X);
-        Console.WriteLine("_size_Y: " + this._size_Y);
-        Console.WriteLine("_ruleBirth: { " + string.Join(", ", this._ruleBirth) + " }");
-        Console.WriteLine("_ruleSurvival: { " + string.Join(", ", this._ruleSurvival) + " }");
-        Console.WriteLine("_patternRaw: " + this._patternRaw);
+        Console.WriteLine("Name: " + this.Name);
+        Console.WriteLine("Comments: ");
+        Console.WriteLine(string.Join(Environment.NewLine, this.Comments));
+        Console.WriteLine("Author: " + this.Author);
+        Console.WriteLine("Size_X: " + this.Size_X);
+        Console.WriteLine("Size_Y: " + this.Size_Y);
+        Console.WriteLine("RuleBirth: { " + string.Join(", ", this.RuleBirth) + " }");
+        Console.WriteLine("RuleSurvival: { " + string.Join(", ", this.RuleSurvival) + " }");
+        Console.WriteLine("PatternRaw: " + this.PatternRaw);
     }
     
     /// <summary>
@@ -103,12 +103,12 @@ public class RunLengthEncodedParser
     /// </summary>
     private void PopulatePattern()
     {
-        this._pattern = new char[this._size_Y, this._size_X];
-        var patternRows = this._patternRaw.Replace("!", "").Split('$').ToList();
+        this.Pattern = new char[this.Size_Y, this.Size_X];
+        var patternRows = this.PatternRaw.Replace("!", "").Split('$').ToList();
 
-        if (patternRows.Count() != this._size_Y) 
+        if (patternRows.Count() != this.Size_Y) 
         {
-            throw new ArgumentException($"Specified Y value is {this._size_Y} but the raw pattern rendered as {patternRows.Count()} rows.");
+            throw new ArgumentException($"Specified Y value is {this.Size_Y} but the raw pattern rendered as {patternRows.Count()} rows.");
         }
         else
         {
@@ -117,7 +117,7 @@ public class RunLengthEncodedParser
             int currentCell;
             
             // go over each row
-            for (int y = 0; y < this._size_Y; y++)
+            for (int y = 0; y < this.Size_Y; y++)
             {
                 // initialize counters
                 numString = string.Empty;
@@ -149,16 +149,16 @@ public class RunLengthEncodedParser
                         int endCell = currentCell + numCells;
                         for (int x = currentCell; x < endCell; x++, currentCell++)
                         {
-                            this._pattern[y, x] = c;
+                            this.Pattern[y, x] = c;
                         }
                         // finally, we reset the number string so we are ready to read another number
                         numString = string.Empty;
                     }
                 }
                 // fill in remaining empty spaces in row
-                for (int x = currentCell; x < this._size_X; x++)
+                for (int x = currentCell; x < this.Size_X; x++)
                 {
-                    this._pattern[y, x] = DEAD_CELL;
+                    this.Pattern[y, x] = DEAD_CELL;
                 }
             }
         }
@@ -177,7 +177,7 @@ public class RunLengthEncodedParser
 
     public string GetHumanFriendlyPattern()
     {
-        var matrix = this._pattern;
+        var matrix = this.Pattern;
         string humanFriendlyPattern = string.Empty;
         
         for (int i = 0; i < matrix.GetLength(0); i++)
